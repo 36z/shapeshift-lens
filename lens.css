@@ -513,3 +513,5 @@ span.ssio-label {
 .pay-with *:focus {
 	outline:none;
 }
+
+.ssio-deposit img, .ssio-recipient img {width:30px;height:30px}
