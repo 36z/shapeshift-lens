@@ -1,0 +1,26 @@
+{
+   "background": {
+      "scripts": [ "background.js" ]
+   },
+   "content_scripts": [ {
+      "css": [ "jquery-ui.min.css", "lens.css" ],
+      "js": [ "jquery-2.1.1.min.js", "jquery-ui.min.js", "jquery.dd.min.js", "qrcode.js", "lens.js" ],
+      "matches": [ "\u003Call_urls>" ]
+   } ],
+   "description": "Send Altcoins to a Bitcoin address using ShapeShift automatic conversion.",
+   "icons": {
+      "128": "128x128_1.png"
+   },
+   "manifest_version": 2,
+   "name": "ShapeShift Lens",
+   "page_action": {
+      "default_icon": {
+         "19": "19x19_1.png",
+         "38": "38x38_1.png"
+      },
+      "default_title": "ShapeShift has found Bitcoin addresses on this page."
+   },
+   "permissions": [ "http://shapeshift.io/" ],
+   "version": "1.1",
+   "web_accessible_resources": [ "*.gif", "images/*", "*.png" ]
+}
