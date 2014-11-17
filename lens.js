@@ -327,7 +327,7 @@ function inject_modal() {
                             var withdraw = response.withdraw;
                             var txid = response.transaction;
 
-                            show_success(incoming + " " + altcoin_icon + " " + in_type + " was converted to " + outgoing + " " + bitcoin_icon + " BTC and sent to " + "<strong>" + withdraw + "</strong>");
+                            show_success("<div class='ssio-in-out'>" + incoming + " " + altcoin_icon + " " + in_type + " was converted to " + outgoing + " " + bitcoin_icon + " BTC and sent to " + "<strong>" + withdraw + "</strong></div>");
 
                             $('.ssio-email-send').click(function() {
                                 var email = $("#shapeshift-lens-modal .ssio-email").val();

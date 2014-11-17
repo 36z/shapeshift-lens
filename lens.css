@@ -515,3 +515,14 @@ span.ssio-label {
 }
 
 .ssio-deposit img, .ssio-recipient img {width:30px;height:30px}
+
+.ssio-success-text img {
+	width:30px;
+	height:30px;
+}
+
+
+.ssio-in-out img {
+	width:30px;
+	height:30px;
+}
