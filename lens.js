@@ -268,7 +268,6 @@ function inject_modal() {
                 show_error(response.error);
                 return;
             }
-            //console.log(response);
 
             var amount = null;
             var expiration = null;
@@ -359,9 +358,11 @@ function inject_modal() {
 						seconds_remaining = response.seconds_remaining;
                     });
 
-                if (seconds_remaining || expiration) {
+                if (seconds_remaining )//|| expiration)
+                {
 					
-                    var seconds = seconds_remaining ? seconds_remaining : ((expiration - new Date()) / 1000).toFixed(0);
+                    //var seconds = seconds_remaining ? seconds_remaining : ((expiration - new Date()) / 1000).toFixed(0);
+                    var seconds = seconds_remaining;
 					var timeText = ""
 					var sec = 0;
 					if(seconds > 59)
@@ -522,10 +523,10 @@ $(function() {
             $("#shapeshift-lens-modal").dialog("close");
         });
         //show_success("induced success");
-        $('input[data-toggle="popover"').focus(function(){
+        $('input[data-toggle="popover"]').focus(function(){
 
         });
-		$('input[data-toggle="popover"').on('blur', function(){
+		$('input[data-toggle="popover"]').on('blur', function(){
 		   $('.ssio-popover').fadeOut().remove();
 		}).on('focus', function(){
 		  	var width = $(this).width() + 10;
