@@ -39,7 +39,8 @@ var crypto_data = {
     BTC: {symbol: "BTC", name: "Bitcoin", icon: chrome.extension.getURL("bitcoin.png")},
     NMC: {symbol: "NMC", name: "Namecoin", icon: chrome.extension.getURL("namecoin.png")},
     FTC: {symbol: "FTC", name: "Feathercoin", icon: chrome.extension.getURL("feathercoin.png")},
-    BC: {symbol: "BC", name: "Blackcoin", icon: chrome.extension.getURL("blackcoin.png")}
+    BC: {symbol: "BC", name: "Blackcoin", icon: chrome.extension.getURL("blackcoin.png")},
+    XPY: {symbol: "XPY", name: "Paycoin", icon: chrome.extension.getURL("paycoin.png")}
 };
 
 var dropdown_data = [
@@ -91,6 +92,13 @@ var dropdown_data = [
         selected: false,
         description: "Blackcoin",
         imageSrc: chrome.extension.getURL("blackcoin.png")
+    },
+    {
+	    text: "Paycoin",
+	    value: 'xpy',
+	    selected: false,
+	    description: "Paycoin",
+	    imageSrc: chrome.extension.getURL("paycoin.png")
     }
 ];
 
@@ -218,6 +226,7 @@ function inject_modal() {
                 "<option value='nmc' data-image='" + chrome.extension.getURL("namecoin.png") + "'>Namecoin</option>" +
                 "<option value='ftc' data-image='" + chrome.extension.getURL("feathercoin.png") + "'>Feathercoin</option>" +
                 "<option value='bc' data-image='" + chrome.extension.getURL("blackcoin.png") + "'>Blackcoin</option>" +
+                "<option value='xpy' data-image='" + chrome.extension.getURL("paycoin.png") + "'>Paycoin</option>" +
             "</select></div>" +
 	            "<div class='ssio-form-item last'><input class='ssio-form-control ssio-return-address' data-trigger='focus' data-toggle='popover' data-placement='left' data-content='Any deposit greater than the deposit limit will be returned only if a return address has been entered. Otherwise you must contact shapeshift.io support for any returns.' placeholder='Return Address (Optional)' disabled></div>" +
             "</div>" +
