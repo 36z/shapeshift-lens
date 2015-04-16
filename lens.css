@@ -480,21 +480,26 @@ span.ssio-label {
 	margin-right:15px;
 }
 .ddChild {
-	left:0 !important;
+	left:50% !important;
+	margin-left:-225px;
 	height:auto !important;
 	top:32px !important;
 }
 .ddChild ul {
 	padding:0;
 	background: #fff;
-	width:200px;
+	width:450px;
 	border-radius: 4px;
 	box-shadow: 0 0 5px rgba(0,0,0,.3);
+	overflow: hidden;
+
 }
 .ddChild ul li {
 	list-style: none;
 	padding:10px;
 	border-bottom:1px solid #ddd;
+	float:left;
+	width:33.33%;
 	
 }
 .ddChild ul li:first-child {
@@ -525,4 +530,11 @@ span.ssio-label {
 .ssio-in-out img {
 	width:30px;
 	height:30px;
+}
+
+.public-key {
+	display: block;
+	font-size:11px;
+	margin-top:5px;
+	color:rgba(255,255,255,.6);
 }

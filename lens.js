@@ -31,17 +31,15 @@ function round(value, exp) {
 }
 
 
-var crypto_data = {
-    LTC: {symbol: 'LTC', name: "Litecoin", icon: chrome.extension.getURL("litecoin.png")},
-    PPC: {symbol: "PPC", name: "Peercoin", icon: chrome.extension.getURL("peercoin.png")},
-    DOGE: {symbol: "DOGE", name: "Dogecoin", icon: chrome.extension.getURL("dogecoin.png")},
-    DRK: {symbol: "DRK", name: "Darkcoin", icon: chrome.extension.getURL("darkcoin.png")},
-    BTC: {symbol: "BTC", name: "Bitcoin", icon: chrome.extension.getURL("bitcoin.png")},
-    NMC: {symbol: "NMC", name: "Namecoin", icon: chrome.extension.getURL("namecoin.png")},
-    FTC: {symbol: "FTC", name: "Feathercoin", icon: chrome.extension.getURL("feathercoin.png")},
-    BC: {symbol: "BC", name: "Blackcoin", icon: chrome.extension.getURL("blackcoin.png")},
-    XPY: {symbol: "XPY", name: "Paycoin", icon: chrome.extension.getURL("paycoin.png")}
-};
+var crypto_data = '';
+
+function getCoins(callback) {
+	$.getJSON( "https://shapeshift.io/getcoins", function( data ) {
+		crypto_data = data;	
+		callback();
+	});
+}
+
 
 var dropdown_data = [
     {
@@ -88,23 +86,37 @@ var dropdown_data = [
     },
     {
         text: "Blackcoin",
-        value: 'bc',
+        value: 'blk',
         selected: false,
         description: "Blackcoin",
         imageSrc: chrome.extension.getURL("blackcoin.png")
     },
     {
-	    text: "Paycoin",
-	    value: 'xpy',
+	    text: "Nxt",
+	    value: 'nxt',
 	    selected: false,
-	    description: "Paycoin",
-	    imageSrc: chrome.extension.getURL("paycoin.png")
+	    description: "Nxt",
+	    imageSrc: chrome.extension.getURL("nxt.png")
+    },
+    {
+	    text: "Nubits",
+	    value: 'nbt',
+	    selected: false,
+	    description: "Nubits",
+	    imageSrc: chrome.extension.getURL("nubits.png")
+    },
+    {
+	    text: "Ripple",
+	    value: 'xrp',
+	    selected: false,
+	    description: "Ripple",
+	    imageSrc: chrome.extension.getURL("xrp.png")
     }
 ];
 
 // Change to "//" when shapeshift.io's api supports HTTPS.
 // until then, the extension will break on https pages.
-var ssio_protocol = "//";
+var ssio_protocol = "https://";
 
 var btc_regex = /\b[13][a-km-zA-HJ-NP-Z0-9]{26,33}\b/g;
 
@@ -219,14 +231,6 @@ function inject_modal() {
             "</div>" +
             "<div class='pay-with'><select class='ssio-currency-dropdown'>" +
                 "<option value='---'>Pay with:</option>" +
-                "<option value='ltc' data-image='" + chrome.extension.getURL("litecoin.png") + "'>Litecoin</option>" +
-                "<option value='ppc' data-image='" + chrome.extension.getURL("peercoin.png") + "'>Peercoin</option>" +
-                "<option value='doge' data-image='" + chrome.extension.getURL("dogecoin.png") + "'>Dogecoin</option>" +
-                "<option value='drk' data-image='" + chrome.extension.getURL("darkcoin.png") + "'>Darkcoin</option>" +
-                "<option value='nmc' data-image='" + chrome.extension.getURL("namecoin.png") + "'>Namecoin</option>" +
-                "<option value='ftc' data-image='" + chrome.extension.getURL("feathercoin.png") + "'>Feathercoin</option>" +
-                "<option value='bc' data-image='" + chrome.extension.getURL("blackcoin.png") + "'>Blackcoin</option>" +
-                "<option value='xpy' data-image='" + chrome.extension.getURL("paycoin.png") + "'>Paycoin</option>" +
             "</select></div>" +
 	            "<div class='ssio-form-item last'><input class='ssio-form-control ssio-return-address' data-trigger='focus' data-toggle='popover' data-placement='left' data-content='Any deposit greater than the deposit limit will be returned only if a return address has been entered. Otherwise you must contact shapeshift.io support for any returns.' placeholder='Return Address (Optional)' disabled></div>" +
             "</div>" +
@@ -239,14 +243,15 @@ function inject_modal() {
         // the "shift" api call, then starts the timers.
 
         $("#shapeshift-lens-modal").dialog("option", "buttons", []);
-
+		console.log(crypto_data);
         var btc_address = $("#shapeshift-lens-modal .ssio-address").val();
         var return_address = $('#shapeshift-lens-modal .ssio-return-address').val();
         var currency = $("#shapeshift-lens-modal .ssio-currency-dropdown").val();
         var altcoin_name = crypto_data[currency.toUpperCase()].name;
-        var altcoin_icon = "<img src='" + crypto_data[currency.toUpperCase()].icon + "'>";
-        var bitcoin_icon = "<img src='" + crypto_data["BTC"].icon + "'>";
-
+        var altcoin_icon = "<img src='" + crypto_data[currency.toUpperCase()].image + "'>";
+        var bitcoin_icon = "<img src='" + crypto_data["BTC"].image + "'>";
+		var public_key = '';
+		var nice_rsAddress = '';
         var pair = currency + "_btc";
         var btc_amount = $("#shapeshift-lens-modal .ssio-amount").val()
 
@@ -268,7 +273,7 @@ function inject_modal() {
                 show_error(response.error);
                 return;
             }
-
+			var deposit_text = '';
             var amount = null;
             var expiration = null;
 			var seconds_remaining = null;
@@ -277,13 +282,24 @@ function inject_modal() {
                 var deposit = response.success.deposit;
                 var amount = response.success.depositAmount;
                 expiration = response.success.expiration;
+                public_key = response.success.public;
+	            destTag = response.success.xrpDestTag;
+				depositType = response.success.depositType;
             } else {
                 // response came from call to 'shift'
                 var deposit = response.deposit;
+                public_key = response.public;
+				destTag = response.xrpDestTag;
+				depositType = response.depositType;
             }
-
+			if(public_key) {
+				nice_rsAddress = '<span class="public-key">' + public_key + '</span>';
+			}
             var deposit_type = response.depositType;
-
+	        if(deposit_type == 'BTS' || deposit_type == 'BITUSD') {
+		        deposit_text = '<strong>shapeshiftio</strong> ' + 'MEMO: ';
+		        $('.depo-label').text('Deposit Account:');
+	        }
             if(amount) {
                 var show_amount = "<b>" + amount + "</b> ";
             } else {
@@ -292,7 +308,7 @@ function inject_modal() {
 
             var final_modal = "<span class='ssio-deposit'>" +
                 "Send " + show_amount + " " + altcoin_icon + " " + altcoin_name +
-                " to <br>" + "<span class='depo-address'>" + deposit + "</span>" +
+                " to <br>" + "<span class='depo-address'>" + deposit_text + deposit + "</span>" + nice_rsAddress +
                 "</span>" +
                 "<div id='ssio-qrcode'></div>" +
                 "<br>" +
@@ -503,7 +519,21 @@ $(function() {
         event.preventDefault();
         var address = $(this).data('address');
         //chrome.runtime.sendMessage({clicked_address: address});
-        $("#shapeshift-lens-modal select").msDropDown();
+
+			getCoins(function(){
+				$.each(crypto_data, function(i, currCoin) {
+					if(currCoin.symbol !== 'BTC' && currCoin.status == 'available') {
+						$('#shapeshift-lens-modal select').append('<option value="' + currCoin.symbol.toLowerCase() + '" data-image="' + currCoin.image + '">' + currCoin.name + '</option');
+					}
+				});
+				$("#shapeshift-lens-modal select").msDropDown();			
+			});
+
+
+
+
+
+
         $("#shapeshift-lens-modal .ssio-address").val(address);
         $("#shapeshift-lens-modal").dialog({
             show: { effect: "fade", duration: 300 },
